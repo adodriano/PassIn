@@ -15,7 +15,7 @@ namespace PassIn.Application.UseCases.Attendees.GetAllByEventId
         }
         public ResponseAllAttendeesJson Execute(Guid eventId)
         {
-           var entity = _dbContext.Events.Include(e => e.Attendees).FirstOrDefault(e => e.Id == eventId);
+           var entity = _dbContext.Events.Include(e => e.Attendees).ThenInclude(e => e.CheckIn).FirstOrDefault(e => e.Id == eventId);
             if (entity is null)
                 throw new NotFoundException("An event with this id dont exist.");
 
@@ -26,7 +26,8 @@ namespace PassIn.Application.UseCases.Attendees.GetAllByEventId
                     Id = eventId,
                     Name = attendee.Name,
                     Email = attendee.Email,
-                    CreatedAt = attendee.Created_At
+                    CreatedAt = attendee.Created_At,
+                    CheckedInAt = attendee.CheckIn?.Created_At               
                 }).ToList()
             };
         }
